@@ -38,4 +38,5 @@ func main() {
     }
 
     fmt.Println(token)
+    api.ListTimeEntries(token)
 }

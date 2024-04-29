@@ -22,6 +22,12 @@ type Response struct {
     ValidUntil string   `xml:"validUntil"`
 }
 
+type timelist struct {
+    Token string `xml:"token"`
+	DateFrom string   `xml:"dateFrom"`
+	DateTo string   `xml:"dateTo"`
+}
+
 const baseURL = "https://api.timewax.com/"
 
 func GetToken(client string, username string, password string) (string, error) {
@@ -55,4 +61,22 @@ func GetToken(client string, username string, password string) (string, error) {
     } else {
         return "", fmt.Errorf("HTTP request failed with status code: %d", resp.StatusCode)
     }
+}
+
+func ListTimeEntries(token string) (string, error) {
+    
+    xmlData := &timelist{token, "20240101", "20240201"}
+
+    xmlBody, err := xml.MarshalIndent(xmlData, "", "  ")
+    if err != nil {
+        return "", fmt.Errorf("Error marshalling XML: %v\n", err)
+    }
+
+    resp, err := http.Post(baseURL+"time/entries/list", "text/xml", strings.NewReader(string(xmlBody)))
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    fmt.Println(resp.Body)
+    return "", nil
 }
