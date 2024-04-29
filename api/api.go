@@ -24,14 +24,13 @@ type Response struct {
 
 const baseURL = "https://api.timewax.com/"
 
-func GetToken(client string, username string, password string) {
+func GetToken(client string, username string, password string) (string, error) {
 
     xmlData := &request{client, username, password}
 
     xmlBody, err := xml.MarshalIndent(xmlData, "", "  ")
     if err != nil {
-        fmt.Printf("Error marshalling XML: %v\n", err)
-        return
+        return "", fmt.Errorf("Error marshalling XML: %v\n", err)
     }
 
     resp, err := http.Post(baseURL+"authentication/token/get/", "text/xml", strings.NewReader(string(xmlBody)))
@@ -49,12 +48,11 @@ func GetToken(client string, username string, password string) {
 
         var resp Response
         if err := xml.Unmarshal([]byte(bodyString), &resp); err != nil {
-            fmt.Println("Error unmarshalling XML:", err)
-            return
+            return "", fmt.Errorf("Error unmarshalling XML: %v", err)
         }
-        fmt.Println("Token:", resp.Token)
-    } else {
-        fmt.Println("Error:", resp.StatusCode)
-    }
 
+        return resp.Token, nil
+    } else {
+        return "", fmt.Errorf("HTTP request failed with status code: %d", resp.StatusCode)
+    }
 }

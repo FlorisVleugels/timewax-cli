@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"os"
 	"timewax-cli/api"
@@ -31,5 +32,10 @@ func main() {
         log.Fatal(err)
     }
 
-    api.GetToken(config.Client, config.Username, config.Password)
+    token, err :=api.GetToken(config.Client, config.Username, config.Password)
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    fmt.Println(token)
 }
