@@ -1,3 +1,3 @@
-module Projects/timewax-cli
+module timewax-cli
 
 go 1.22.2
