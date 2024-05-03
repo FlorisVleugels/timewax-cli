@@ -4,6 +4,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
+	"os"
 	"log"
 	"net/http"
 	"strings"
@@ -34,7 +35,7 @@ type timelist struct {
 
 const baseURL = "https://api.timewax.com/"
 
-func GetToken(client string, username string, password string) (string, error) {
+func GetToken(client string, username string, password string, homeDir string) (string, error) {
 
     xmlData := &tokenrequest{Client: client, Username: username, Password: password}
 
@@ -53,8 +54,13 @@ func GetToken(client string, username string, password string) (string, error) {
         if err != nil {
             log.Fatal(err)
         }
-
+        
         bodyString := string(bodyBytes)
+
+        err = os.WriteFile(homeDir+"/.config/timewax-cli/token.xml", bodyBytes, 0666)
+        if err != nil {
+            log.Fatal(err)
+        }
 
         var resp tokenframe
         if err := xml.Unmarshal([]byte(bodyString), &resp); err != nil {
