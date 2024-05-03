@@ -9,13 +9,14 @@ import (
 	"strings"
 )
 
-type request struct {
+type userframe struct {
+    XMLName xml.Name `xml:"request"`
 	Client   string   `xml:"client"`
 	Username string   `xml:"username"`
 	Password string   `xml:"password"`
 }
 
-type Response struct {
+type tokenframe struct {
     XMLName    xml.Name `xml:"response"`
     Valid      string   `xml:"valid"`
     Token      string   `xml:"token"`
@@ -23,16 +24,18 @@ type Response struct {
 }
 
 type timelist struct {
+    XMLName xml.Name `xml:"request"`
     Token string `xml:"token"`
 	DateFrom string   `xml:"dateFrom"`
 	DateTo string   `xml:"dateTo"`
+    Entries string `xml:"onlyApprovedEntries"` 
 }
 
 const baseURL = "https://api.timewax.com/"
 
 func GetToken(client string, username string, password string) (string, error) {
 
-    xmlData := &request{client, username, password}
+    xmlData := &userframe{Client: client, Username: username, Password: password}
 
     xmlBody, err := xml.MarshalIndent(xmlData, "", "  ")
     if err != nil {
@@ -52,7 +55,7 @@ func GetToken(client string, username string, password string) (string, error) {
 
         bodyString := string(bodyBytes)
 
-        var resp Response
+        var resp tokenframe
         if err := xml.Unmarshal([]byte(bodyString), &resp); err != nil {
             return "", fmt.Errorf("Error unmarshalling XML: %v", err)
         }
@@ -65,18 +68,26 @@ func GetToken(client string, username string, password string) (string, error) {
 
 func ListTimeEntries(token string) (string, error) {
     
-    xmlData := &timelist{token, "20240101", "20240201"}
+    xmlData := &timelist{Token: token, DateFrom: "20240201", DateTo: "20240202", Entries: "No"}
 
     xmlBody, err := xml.MarshalIndent(xmlData, "", "  ")
     if err != nil {
         return "", fmt.Errorf("Error marshalling XML: %v\n", err)
     }
 
-    resp, err := http.Post(baseURL+"time/entries/list", "text/xml", strings.NewReader(string(xmlBody)))
+    resp, err := http.Post(baseURL+"time/entries/list/", "text/xml", strings.NewReader(string(xmlBody)))
     if err != nil {
         log.Fatal(err)
     }
 
-    fmt.Println(resp.Body)
+    if resp.StatusCode == http.StatusOK {
+        bodyBytes, err := io.ReadAll(resp.Body)
+        if err != nil {
+            log.Fatal(err)
+        }
+
+        bodyString := string(bodyBytes)
+        fmt.Println(bodyString)
+    }
     return "", nil
 }
