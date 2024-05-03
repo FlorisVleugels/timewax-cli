@@ -12,6 +12,7 @@ type Config struct {
     Client string `json:"client"`
     Username string `json:"username"`
     Password string `json:"password"`
+    Name string `json:"name"` 
 }
 
 func main() {
@@ -38,5 +39,5 @@ func main() {
     }
 
     fmt.Println(token)
-    api.ListTimeEntries(token)
+    api.ListTimeEntries(token, config.Name)
 }

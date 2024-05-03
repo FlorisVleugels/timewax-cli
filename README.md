@@ -7,7 +7,8 @@ Example:
 {
   "client": "your client",
   "username": "your username ID",
-  "password": "your password"
+  "password": "your password",
+  "name": "your real name, as found in timewax"
 }
 
 ```

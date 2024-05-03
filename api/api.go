@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-type userframe struct {
+type tokenrequest struct {
     XMLName xml.Name `xml:"request"`
 	Client   string   `xml:"client"`
 	Username string   `xml:"username"`
@@ -28,6 +28,7 @@ type timelist struct {
     Token string `xml:"token"`
 	DateFrom string   `xml:"dateFrom"`
 	DateTo string   `xml:"dateTo"`
+    Resource string `xml:"resource"` 
     Entries string `xml:"onlyApprovedEntries"` 
 }
 
@@ -35,7 +36,7 @@ const baseURL = "https://api.timewax.com/"
 
 func GetToken(client string, username string, password string) (string, error) {
 
-    xmlData := &userframe{Client: client, Username: username, Password: password}
+    xmlData := &tokenrequest{Client: client, Username: username, Password: password}
 
     xmlBody, err := xml.MarshalIndent(xmlData, "", "  ")
     if err != nil {
@@ -66,9 +67,9 @@ func GetToken(client string, username string, password string) (string, error) {
     }
 }
 
-func ListTimeEntries(token string) (string, error) {
+func ListTimeEntries(token string, name string) (string, error) {
     
-    xmlData := &timelist{Token: token, DateFrom: "20240201", DateTo: "20240202", Entries: "No"}
+    xmlData := &timelist{Token: token, DateFrom: "20240201", DateTo: "20240202", Entries: "No", Resource: name}
 
     xmlBody, err := xml.MarshalIndent(xmlData, "", "  ")
     if err != nil {
