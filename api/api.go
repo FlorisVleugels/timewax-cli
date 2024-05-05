@@ -73,9 +73,9 @@ func GetToken(client string, username string, password string, homeDir string) (
     }
 }
 
-func ListTimeEntries(token string, name string) (string, error) {
+func ListTimeEntries(token string, datefrom string, dateto string, name string) (string, error) {
     
-    xmlData := &timelist{Token: token, DateFrom: "20240201", DateTo: "20240202", Entries: "No", Resource: name}
+    xmlData := &timelist{Token: token, DateFrom: datefrom, DateTo: dateto, Entries: "No", Resource: name}
 
     xmlBody, err := xml.MarshalIndent(xmlData, "", "  ")
     if err != nil {

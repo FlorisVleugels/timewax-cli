@@ -3,11 +3,11 @@ package main
 import (
 	"encoding/json"
     "encoding/xml"
-	"fmt"
 	"log"
 	"os"
 	"timewax-cli/api"
     "time"
+    "fmt"
 )
 
 type Config struct {
@@ -25,6 +25,9 @@ type tokenframe struct {
 }
 
 var token string
+
+var datefrom string
+var dateto string
 
 func main() {
 
@@ -76,5 +79,6 @@ func main() {
         }
     }
 
-    api.ListTimeEntries(token, config.Name)
+    fmt.Scanln(&datefrom, &dateto)
+    api.ListTimeEntries(token, datefrom, dateto, config.Name)
 }
